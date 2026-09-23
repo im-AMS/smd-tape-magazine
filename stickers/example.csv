@@ -1,0 +1,6 @@
+kind,value,tolerance,rating,subtype,footprint,sku,quantity
+R,10k,1%,100m,,0603,,
+R,330,5%,100m,,0603,,
+C,100n,10%,25v X7R,MLCC,0603,,
+C,10u,20%,16v X5R,MLCC,0805,,
+LED,RED,,,,0603,,

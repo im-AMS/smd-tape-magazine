@@ -1,0 +1,14 @@
+# FreeCAD
+*.FCBak
+*.FCStd1
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Sticker output
+stickers/out/
+
+# macOS
+.DS_Store
