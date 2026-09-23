@@ -99,7 +99,9 @@ def build():
     parts = load_csv(pathlib.Path(sys.argv[1]), W, QR_TEMPLATE)
     st = plan(parts, W)
     by = {p.value: p for p in parts}
-    sel = [by.get("330R", parts[0]), by.get("100nF", parts[12]), by.get("RED", parts[19])]
+    # one resistor, one cap, one LED if present; otherwise spread across the list
+    sel = [by.get(v) or parts[min(i, len(parts) - 1)]
+           for v, i in (("330R", 0), ("100nF", 12), ("RED", 19))]
 
     o.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{PAGE_W}mm" height="{PAGE_H}mm" '
              f'viewBox="0 0 {PAGE_W} {PAGE_H}"><rect width="{PAGE_W}" height="{PAGE_H}" fill="#fff"/>')
@@ -221,7 +223,7 @@ def build():
         o.append(f'<line x1="{M+i*10}" y1="{by_-2}" x2="{M+i*10}" y2="{by_}" stroke="#111" stroke-width="0.3"/>')
     o.append(mono("50.0 mm — if this is not 50 mm the print was rescaled", M + 53, by_, 2.5))
     o.append("</svg>")
-    out = pathlib.Path(__file__).parent / "out" / "experiment_A4.svg"
+    out = pathlib.Path(__file__).parent / "out" / "design_test_sheet_A4.svg"
     out.write_text("".join(o), encoding="utf-8")
     print(out)
 

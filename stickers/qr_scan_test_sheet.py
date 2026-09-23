@@ -113,7 +113,7 @@ def main():
     ruler(o, min(y + 20, PAGE_H - 30), "50.0 mm — second ruler, in case the first clipped")
     o.append("</svg>")
 
-    out = pathlib.Path(__file__).parent / "out" / "qr_test_A4.svg"
+    out = pathlib.Path(__file__).parent / "out" / "qr_scan_test_sheet_A4.svg"
     out.parent.mkdir(exist_ok=True)
     out.write_text("".join(o), encoding="utf-8")
     print(out)

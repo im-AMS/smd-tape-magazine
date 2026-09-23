@@ -12,8 +12,9 @@ magazine.
 
 | path | what |
 |---|---|
-| `print/` | print-ready STLs: `body_{8,12,16}mm`, `slider_{8,12,16}mm`, `lid` (one lid fits all widths) |
-| `cad/` | the parametric FreeCAD model (FreeCAD 1.1+). Keep the three files together |
+| `print/` | print-ready STLs: `smd-magazine-body-{8,12,16}mm`, `smd-magazine-slider-{8,12,16}mm`, `smd-magazine-lid-all-sizes` |
+| `cad/smd-tape-magazine.FCStd` | the parametric FreeCAD model (FreeCAD 1.1+): magazine, lid, slider, parameters |
+| `cad/latch-socket-cutter.FCStd`, `cad/latch-peg.FCStd` | the lid latch shapes, linked into the main file. Keep all three files together |
 | `stickers/` | label generator: front + top stickers per part, laid out on A4 |
 | `docs/DESIGN.md` | how the model is built, measured dimensions, and known traps |
 
@@ -47,8 +48,8 @@ bore. To use that one, set `spring_pocket` to 5 (see below).
 
 ## Customise
 
-Open `cad/body.FCStd` in FreeCAD 1.1 or newer and double-click `Params`. The
-sheet is colour-coded:
+Open `cad/smd-tape-magazine.FCStd` in FreeCAD 1.1 or newer and double-click
+`Parameters`. The sheet is colour-coded:
 
 - **green: user inputs.** `tape_size` (8 / 12 / 16), `clearance`, `wall`,
   `spring_pocket`
@@ -56,14 +57,21 @@ sheet is colour-coded:
   on with your printer
 - **grey: derived / internal.** Calculated from the above; don't type over them
 
-After changing a value press **Ctrl+R** (Edit → Refresh). Then export the tip
-of `Body001` (body), `lid` and `slider` as STL.
+After changing a value press **Ctrl+R** (Edit → Refresh). Then select the
+`Magazine`, `Lid` or `Slider` body and export it as STL.
 
 ## Stickers
 
 `stickers/` generates two labels per part from a CSV parts list: a front
 label for the dispensing end and a top strip with value, package and a QR
-code, sized to the magazine width. See [`stickers/README.md`](stickers/README.md).
+code, sized to the magazine width. Runs with [uv](https://docs.astral.sh/uv/):
+
+```sh
+cd stickers
+uv run labels.py example.csv --out out
+```
+
+See [`stickers/README.md`](stickers/README.md) for the CSV format and options.
 
 ## Credits
 
@@ -78,9 +86,12 @@ code, sized to the magazine width. See [`stickers/README.md`](stickers/README.md
 
 ## License
 
-- **3D model, STLs, images, docs:** [CC BY-NC-SA 4.0](LICENSE). Free to print,
-  share and remix with attribution; not for commercial use; remixes must use
-  the same license.
-- **Sticker generator code** (`stickers/*.py`): [MIT](stickers/LICENSE).
-- **Fonts** in `stickers/fonts/`: SIL Open Font License, see
-  [`OFL.txt`](stickers/fonts/OFL.txt).
+Everything here (3D model, STLs, sticker generator, images, docs) is licensed
+under [CC BY-NC-SA 4.0](LICENSE):
+
+- **Free** to print, share and remix, with credit
+- **No commercial use**: don't sell the files or prints made from them
+- **Remixes must use the same license**
+
+The bundled fonts in `stickers/fonts/` are the exception: they are under the SIL
+Open Font License, see [`OFL.txt`](stickers/fonts/OFL.txt).

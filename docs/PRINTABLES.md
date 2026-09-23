@@ -46,8 +46,9 @@ face down.
 spring bore is 8 mm deep, for a longer spring than the original's 0.3 × 4 ×
 20 mm. Set `spring_pocket` to 5 in the model to use that one instead.
 
-**Customising:** open `body.FCStd` (keep the three .FCStd files in one folder),
-double-click `Params`, change the green cells, press Ctrl+R, and export.
+**Customising:** open `smd-tape-magazine.FCStd` (keep the three .FCStd files
+in one folder), double-click `Parameters`, change the green cells, press
+Ctrl+R, and export the `Magazine`, `Lid` and `Slider` bodies.
 
 **Source & sticker generator:** <GitHub link>
 

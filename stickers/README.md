@@ -14,13 +14,14 @@ paired one cell per part.
 
 ## Run
 
+Needs [uv](https://docs.astral.sh/uv/). It installs Python and the
+dependencies on first run.
+
 ```sh
-python3 -m venv .venv && . .venv/bin/activate
-pip install segno fonttools
-python labels.py example.csv --out out           # try it on the bundled example
-python labels.py "path/to/parts.csv" --out out --pdf
-python qr_test.py "path/to/parts.csv"      # print-and-scan diagnostic
-python experiment.py "path/to/parts.csv"   # one-sheet design experiment
+uv run labels.py example.csv --out out                 # try it on the bundled example
+uv run labels.py "path/to/parts.csv" --out out --pdf
+uv run qr_scan_test_sheet.py "path/to/parts.csv"       # print-and-scan diagnostic
+uv run design_test_sheet.py "path/to/parts.csv"        # one-sheet design experiment
 ```
 
 Fonts are bundled in `fonts/` (OFL) and text is converted to outlines, so
@@ -37,7 +38,7 @@ nothing needs installing and the PDF renders identically anywhere.
 
 ## Experiment sheet
 
-`experiment.py` puts every open design question on a single A4 so they can be
+`design_test_sheet.py` puts every open design question on a single A4 so they can be
 settled in one print rather than a series of them. Each cell is coded so results
 can be reported without ambiguity:
 

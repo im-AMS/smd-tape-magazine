@@ -1,0 +1,14 @@
+[project]
+name = "smd-magazine-stickers"
+version = "0.1.0"
+description = "Front and top labels for SMD tape magazines, laid out on A4"
+readme = "README.md"
+license = "CC-BY-NC-SA-4.0"
+requires-python = ">=3.11"
+dependencies = [
+    "fonttools>=4.50",
+    "segno>=1.6",
+]
+
+[tool.uv]
+package = false

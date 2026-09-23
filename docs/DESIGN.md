@@ -1,7 +1,7 @@
 # Design notes
 
 How the FreeCAD model is built, and the traps found while building it. Read
-this before editing anything beyond the `Params` sheet.
+this before editing anything beyond the `Parameters` sheet.
 
 The geometry started from the STL of
 [SMD Component Tape Magazine (8, 12, 16mm)](https://www.printables.com/model/580643)
@@ -15,17 +15,47 @@ FreeCAD 1.1.3.
 
 | path | what |
 |---|---|
-| `cad/body.FCStd` | **the main file**. Holds `Body001` (magazine body), `lid`, `slider`, and the `Params` sheet |
-| `cad/female_joint.FCStd` | the socket cutter. One solid, used 8× to cut the latch sockets |
-| `cad/male_joint.FCStd` | the peg. One solid, used 8× on the lid |
+| `cad/smd-tape-magazine.FCStd` | **the main file**. Holds the `Magazine`, `Lid` and `Slider` bodies and the `Parameters` sheet |
+| `cad/latch-socket-cutter.FCStd` | the socket cutter. One solid, used 8× to cut the latch sockets |
+| `cad/latch-peg.FCStd` | the peg. One solid, used 8× on the lid |
 
-**Keep the three `.FCStd` files together in `cad/`.** `body.FCStd` links to
-`female_joint.FCStd` and `male_joint.FCStd` by relative path. Moving all three
+**Keep the three `.FCStd` files together in `cad/`.** `smd-tape-magazine.FCStd` links to
+`latch-socket-cutter.FCStd` and `latch-peg.FCStd` by relative path. Moving all three
 together is fine; separating them breaks the binders.
+
+## Object names vs labels
+
+FreeCAD can't rename an object's internal name, only its label (what the tree
+shows). Expressions use internal names, and so does this document. Lookup:
+
+| internal name | label in the tree | what it does |
+|---|---|---|
+| `Body001` | Magazine | the magazine body |
+| `Sketch001` / `Pad` | OutlineSketch / Blank | full-thickness slab from the side outline |
+| `Sketch002` / `Pocket` | ReelCavitySketch / ReelCavity | hollows the body, leaving the `wall` front web |
+| `Sketch003` / `Pocket001` | TopRightRecessSketch / TopRightRecess | 1.2 mm recess at the top-right of the back face |
+| `Sketch004` / `Pocket002` | SpringSeatSketch / SpringSeat | seat for the lower end of the slider spring |
+| `Chamfer`, `Fillet`…`Fillet003`, `Chamfer003` | TopRightRecessChamfer, RightEdgeFillet, TopEdgeFillet, TopRightRecessFillet, TopRightCornerFillet, LeftCornerChamfer | edge breaks |
+| `SocketCut` / `Plug1..8` | LatchSockets / SocketCutter1..8 | cuts the 8 lid sockets |
+| `JointPlacement` | LatchPositions | where the 8 latches sit |
+| `Chamfer004` | MagazineFirstLayerChamfer | 0.3 mm elephant's-foot chamfer on the bed face |
+| `Body002` | Lid | the lid |
+| `BodyRef` | LidMagazineRef | binder of the magazine (reference only) |
+| `Sketch006` / `Pad001` | LidOutline / LidPlate | the lid plate |
+| `PegFuse` / `Peg1..8` | LatchPegs / LatchPeg1..8 | fuses the 8 snap pegs |
+| `Chamfer005` | LidFirstLayerChamfer | elephant's-foot chamfer |
+| `Body003` | Slider | the slider |
+| `SliderRef` | SliderMagazineRef | binder of the magazine; `Sketch007` attaches to it |
+| `Sketch007` / `Pad002` | SliderProfile / SliderBlank | slider body |
+| `Sketch008` / `Pad003`, `Sketch009` / `Pad004` | BackGuideRib…, FrontGuideRib… | the ribs on each side |
+| `Sketch010` / `Pocket003` | SpringBoreSketch / SpringBore | spring bore, depth `spring_pocket` |
+| `Chamfer001`, `Chamfer002` | SliderTopChamfer, SliderTopEdgeBreak | top of the slider |
+| `Chamfer006` | SliderFirstLayerChamfer | elephant's-foot chamfer |
+| `Params` | Parameters | the spreadsheet |
 
 ## Parameters
 
-All in `body.FCStd` → `Params`. The sheet is split into colour-coded sections
+All in `smd-tape-magazine.FCStd` → `Parameters` (internal name `Params`). The sheet is split into colour-coded sections
 (FreeCAD spreadsheets have no read-only cells, so this is by convention):
 
 | section | alias | value | drives |
@@ -87,10 +117,10 @@ joint is two numbers:
 ### Cross-body references use SubShapeBinders
 
 `BodyRef`, `SliderRef`, `Plug1..8`, `Peg1..8` are all
-`PartDesign::SubShapeBinder`, `BindMode = Synchronized`. Edit `female_joint` and
-all 8 sockets update; edit `male_joint` and all 8 pegs update.
+`PartDesign::SubShapeBinder`, `BindMode = Synchronized`. Edit `latch-socket-cutter` and
+all 8 sockets update; edit `latch-peg` and all 8 pegs update.
 
-Dependency flows one way: `body → female_joint / male_joint`.
+Dependency flows one way: `smd-tape-magazine → latch-socket-cutter / latch-peg`.
 
 ## Key measured dimensions
 
@@ -111,7 +141,7 @@ invalid (the original had 3728 triangle faces); PartDesign features that fuse
 against it can come out **empty**, with no error. The pad preview looks fine
 because it doesn't run the fuse. Until 2026-09-23 `Body001` still had the
 refined STL solid as its BaseFeature, with `Sketch001`/`002`/`005` projecting
-~74 edges from it. Those projections were frozen into plain sketch geometry
+~74 edges from it. Those projections were frozen into plain sketch geometry (and the unused `Sketch005` deleted)
 and the whole mesh chain was deleted. The body is identical at 8/12/16
 (symmetric difference 0 mm³), and the file shrank from 4.7 MB to 0.8 MB.
 
@@ -195,11 +225,11 @@ Note the female relief above would **subtract** from these.
 
 ## Open items
 
-- [ ] Female relief not applied. `female_joint.FCStd` is untouched; the relief
+- [ ] Female relief not applied. `latch-socket-cutter.FCStd` is untouched; the relief
       was only studied
-- [ ] `female_joint` and `male_joint` pad lengths (5.12 / 4.71) are plain values,
+- [ ] `latch-socket-cutter` and `latch-peg` pad lengths (5.12 / 4.71) are plain values,
       not linked to `peg_center_y`. Change one and update the formula by hand
 - [ ] `slider/Sketch009` has zero geometry yet drives `Pad004`. Worth checking
-- [ ] Sketches `Sketch002`–`005`, `Sketch007`–`010` are still attached to faces
+- [ ] Sketches `Sketch002`–`004`, `Sketch007`–`010` are still attached to faces
       by name (`Face59`, `Face72`, …). They hold at 8/12/16 but are the next
       thing to break if features are added upstream
