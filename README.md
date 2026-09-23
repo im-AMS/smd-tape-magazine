@@ -4,18 +4,21 @@ A fully parametric FreeCAD model of an SMD component tape magazine for 8, 12
 and 16 mm tape, plus a sticker generator that prints matching labels for each
 magazine.
 
-![Assembled magazine](images/assembled.png)
+![8, 12 and 16 mm magazines](images/sizes.png)
 
-![Inside, lid removed](images/inside.png)
+| lid off | lid latches |
+|---|---|
+| ![Inside, lid removed](images/inside.png) | ![Lid pulled off to show the snap pegs](images/exploded.png) |
 
 ## What's in here
 
 | path | what |
 |---|---|
 | `print/` | print-ready STLs: `smd-magazine-body-{8,12,16}mm`, `smd-magazine-slider-{8,12,16}mm`, `smd-magazine-lid-all-sizes` |
+| `print/rails/` | rails to stand the magazines in, from the two earlier versions of this design (their own licenses, see [rails/README](print/rails/README.md)) |
 | `cad/smd-tape-magazine.FCStd` | the parametric FreeCAD model (FreeCAD 1.1+): magazine, lid, slider, parameters |
 | `cad/latch-socket-cutter.FCStd`, `cad/latch-peg.FCStd` | the lid latch shapes, linked into the main file. Keep all three files together |
-| `stickers/` | label generator: front + top stickers per part, laid out on A4 |
+| `stickers/` | label generator (work in progress): front + top stickers per part, laid out on A4 |
 | `docs/DESIGN.md` | how the model is built, measured dimensions, and known traps |
 
 ## Print
@@ -26,19 +29,18 @@ too brittle for them and they snap off.
 The STLs are already oriented: the chamfered face goes on the bed (it's there
 to absorb elephant's foot). No supports needed.
 
-Settings I print with (0.4 mm nozzle):
-
-| | |
+| setting | value |
 |---|---|
 | material | PETG |
-| layer height | 0.25 mm (first layer 0.2) |
-| walls | 2 |
-| top / bottom layers | 4 / 3 |
-| infill | 0% |
+| nozzle | 0.4 mm |
+| layer height | 0.25 mm |
+| walls | 3 |
+| top / bottom shells | 3 / 3 |
+| infill | 8–10% gyroid (a little infill makes the parts more reliable) |
 | supports | none |
 
-Per magazine: one `body`, one `slider` of the same width, one `lid`, and a
-spring.
+Per magazine: one body, one slider of the same width, one lid, and a spring.
+For the rail, pick one from [`print/rails/`](print/rails/README.md).
 
 ### Spring
 
@@ -60,18 +62,26 @@ Open `cad/smd-tape-magazine.FCStd` in FreeCAD 1.1 or newer and double-click
 After changing a value press **Ctrl+R** (Edit → Refresh). Then select the
 `Magazine`, `Lid` or `Slider` body and export it as STL.
 
-## Stickers
+## Stickers (work in progress)
 
 `stickers/` generates two labels per part from a CSV parts list: a front
 label for the dispensing end and a top strip with value, package and a QR
-code, sized to the magazine width. Runs with [uv](https://docs.astral.sh/uv/):
+code, sized to the magazine width.
+
+![Sticker sheet for 8 mm magazines](stickers/images/sheet-8mm-row.png)
+
+> **Work in progress.** I've printed and tested a few sheets, but haven't used
+> them on a full set of magazines yet. Expect changes.
+
+Runs with [uv](https://docs.astral.sh/uv/):
 
 ```sh
 cd stickers
 uv run labels.py example.csv --out out
 ```
 
-See [`stickers/README.md`](stickers/README.md) for the CSV format and options.
+See [`stickers/README.md`](stickers/README.md) for examples, the CSV format
+and options.
 
 ## Credits
 
@@ -83,15 +93,19 @@ See [`stickers/README.md`](stickers/README.md) for the CSV format and options.
   *SMD Component Magazines* is the design Lord Asdi's version remixes. Gen 2
   hasn't been released as open source; this is an open, parametric take on the
   same idea.
+- **Rails** in `print/rails/` are by Lord Asdi (CC BY 4.0) and
+  [OneGeekGuy](https://www.printables.com/model/1182844) (CC BY-NC 4.0),
+  included unmodified.
 
 ## License
 
-Everything here (3D model, STLs, sticker generator, images, docs) is licensed
-under [CC BY-NC-SA 4.0](LICENSE):
+Everything I made here (3D model, STLs, sticker generator, images, docs) is
+licensed under [CC BY-NC-SA 4.0](LICENSE):
 
 - **Free** to print, share and remix, with credit
 - **No commercial use**: don't sell the files or prints made from them
 - **Remixes must use the same license**
 
-The bundled fonts in `stickers/fonts/` are the exception: they are under the SIL
-Open Font License, see [`OFL.txt`](stickers/fonts/OFL.txt).
+Exceptions: the rails in `print/rails/` keep their authors' licenses (see
+above), and the fonts in `stickers/fonts/` are under the SIL Open Font
+License ([`OFL.txt`](stickers/fonts/OFL.txt)).

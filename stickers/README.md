@@ -12,6 +12,26 @@ with a knife and a ruler.
 tracks the feeder, which is why the two stickers share a column grid and can be
 paired one cell per part.
 
+> **Work in progress.** I've printed and tested a few sheets, but haven't used
+> the stickers on a full set of magazines yet. Sizes and layout may change.
+
+## Examples
+
+A real 8 mm sheet: resistors, capacitors and LEDs, colour-coded by class. Each
+part gets a front sticker (package band, value, rating) and a top strip
+(spec, supplier SKU and a QR that opens the supplier's product page).
+
+![8 mm sticker sheet](images/sheet-8mm-row.png)
+
+Close-up:
+
+![Close-up of 8 mm stickers](images/sheet-8mm-closeup.png)
+
+The design test sheet (`design_test_sheet.py`). I printed it on sticker stock
+and picked the current sizes from it:
+
+<img src="images/design-test-sheet.png" alt="Design test sheet" width="480">
+
 ## Run
 
 Needs [uv](https://docs.astral.sh/uv/). It installs Python and the
