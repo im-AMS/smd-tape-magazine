@@ -73,7 +73,7 @@ Ctrl+R, and export the `Magazine`, `Lid` and `Slider` bodies.
 on a full set of magazines yet. Print them on glossy peel-off sticker paper,
 at your printer's highest quality setting, at 100% scale.
 
-**Source & sticker generator:** <GitHub link>
+**Source & sticker generator:** https://github.com/im-AMS/smd-tape-magazine
 
 **Credits**
 - Based on *SMD Component Tape Magazine (8, 12, 16mm)* by **Lord Asdi**
