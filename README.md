@@ -46,6 +46,12 @@ overhangs are the usual cause of a lid that won't fit or won't stay on.
 Per magazine: one body, one slider of the same width, one lid, and a spring.
 For the rail, pick one from [`print/rails/`](print/rails/README.md).
 
+### Loader (recommended)
+
+Print Robin's [SMD Magazine Loader](https://www.printables.com/model/468303-smd-magazine-loader)
+too. It makes refilling a magazine with tape quick and easy. **These
+magazines are compatible with it**; the design they were remixed from is not.
+
 ### Fitting the lid
 
 Press the lid on **evenly**, with something flat and stiff laid over it, e.g.

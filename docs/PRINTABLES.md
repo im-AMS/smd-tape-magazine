@@ -52,6 +52,11 @@ chamfered face down.
 bridges or under-cooled overhangs in the small latch sockets and pegs are the
 usual cause of fitment problems.
 
+**Loader (recommended):** print Robin's SMD Magazine Loader,
+https://www.printables.com/model/468303-smd-magazine-loader. It makes
+refilling a magazine quick and easy. These magazines are compatible with it,
+unlike the design they were remixed from.
+
 **Fitting the lid:** press it on evenly with something flat and stiff over it
 (e.g. a ~3 mm mild steel plate) so all eight pegs snap in together, not one
 corner at a time.
