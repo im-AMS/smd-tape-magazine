@@ -36,7 +36,7 @@ to absorb elephant's foot). No supports needed.
 | layer height | 0.25 mm |
 | walls | 3 |
 | top / bottom shells | 3 / 3 |
-| infill | 8–10% gyroid (a little infill makes the parts more reliable) |
+| infill | 8–10% gyroid (a little infill makes the print itself more reliable) |
 | supports | none |
 
 Per magazine: one body, one slider of the same width, one lid, and a spring.
@@ -72,6 +72,9 @@ code, sized to the magazine width.
 
 > **Work in progress.** I've printed and tested a few sheets, but haven't used
 > them on a full set of magazines yet. Expect changes.
+
+Print them on **glossy peel-off sticker paper** at your printer's **highest
+quality** setting, at 100% scale.
 
 Runs with [uv](https://docs.astral.sh/uv/):
 

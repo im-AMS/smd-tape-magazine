@@ -44,7 +44,8 @@ spreadsheet.
 brittle for them.
 
 **Print settings** (0.4 mm nozzle): 0.25 mm layers, 3 walls, 3 top / 3 bottom
-shells, 8–10% gyroid infill, no supports. The STLs are pre-oriented with the
+shells, 8–10% gyroid infill (a little infill makes the print more reliable),
+no supports. The STLs are pre-oriented with the
 chamfered face down.
 
 **Per magazine:** 1 body, 1 slider of the same width, 1 lid, 1 spring. The
@@ -56,7 +57,8 @@ in one folder), double-click `Parameters`, change the green cells, press
 Ctrl+R, and export the `Magazine`, `Lid` and `Slider` bodies.
 
 **Stickers:** work in progress. I've tested a few sheets but haven't used them
-on a full set of magazines yet.
+on a full set of magazines yet. Print them on glossy peel-off sticker paper,
+at your printer's highest quality setting, at 100% scale.
 
 **Source & sticker generator:** <GitHub link>
 

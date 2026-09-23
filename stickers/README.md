@@ -15,6 +15,16 @@ paired one cell per part.
 > **Work in progress.** I've printed and tested a few sheets, but haven't used
 > the stickers on a full set of magazines yet. Sizes and layout may change.
 
+**How to print them:**
+- Use **glossy sticker paper**, the shiny kind with a backing you peel off.
+  Small text and the QR codes stay crisp on it; plain paper blurs them.
+- Set the printer to its **highest quality / best detail** setting.
+- Print at **100% scale**, never "fit to page". Before cutting, measure the
+  outermost cut ticks: `labels.py` prints the distance they must be apart
+  (or add `--marks` for a 50 mm ruler on the sheet).
+
+![Stickers on 8, 12 and 16 mm magazines](../images/sizes.png)
+
 ## Examples
 
 A real 8 mm sheet: resistors, capacitors and LEDs, colour-coded by class. Each
