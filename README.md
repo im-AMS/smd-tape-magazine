@@ -4,11 +4,11 @@ A fully parametric FreeCAD model of an SMD component tape magazine for 8, 12
 and 16 mm tape, plus a sticker generator that prints matching labels for each
 magazine.
 
-![8, 12 and 16 mm magazines](images/sizes.png)
+![8, 12 and 16 mm magazines with stickers](images/cover.jpg)
 
-| lid off | lid latches |
+| 8 mm magazine | lid latches |
 |---|---|
-| ![Inside, lid removed](images/inside.png) | ![Lid pulled off to show the snap pegs](images/exploded.png) |
+| ![8 mm magazine close-up](images/closeup.jpg) | ![Lid pulled off to show the snap pegs](images/exploded.jpg) |
 
 ## What's in here
 
@@ -39,8 +39,18 @@ to absorb elephant's foot). No supports needed.
 | infill | 8–10% gyroid (a little infill makes the print itself more reliable) |
 | supports | none |
 
+**Tune your filament profile first**, especially **bridging and cooling**.
+The latch sockets and pegs are small, and sagging bridges or under-cooled
+overhangs are the usual cause of a lid that won't fit or won't stay on.
+
 Per magazine: one body, one slider of the same width, one lid, and a spring.
 For the rail, pick one from [`print/rails/`](print/rails/README.md).
+
+### Fitting the lid
+
+Press the lid on **evenly**, with something flat and stiff laid over it, e.g.
+a ~3 mm mild steel plate, so all eight pegs snap in together. Pressing one
+corner at a time bends the lid and can break a peg.
 
 ### Spring
 

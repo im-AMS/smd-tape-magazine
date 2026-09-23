@@ -48,21 +48,21 @@ CLASS_COLOUR = {
     "Q": "#6B4B9B", "U": "#2B3540", "J": "#0D8382", "X": "#68716F",
 }
 PASSIVE = set("RCL")
-# Both query parameters are required — Robu's search only returns the product
-# with post_type=product. That is 44 bytes, which is a version 3 symbol (29
-# modules) and 0.255 mm per module in the 7.4 mm box an 8 mm strip allows.
+# Shortest LCSC URL that still lands on the product page: the bare domain
+# redirects to www, but the path is case-sensitive (an uppercase path lands on
+# the catalogue), so alphanumeric mode is out. 43 bytes is a version 3 symbol
+# (29 modules), 0.255 mm per module in the 7.4 mm box an 8 mm strip allows.
 #
-# Nothing shorter works: version 2 holds 32 bytes at ECC L, and the URL cannot
-# be trimmed below 35 even dropping the scheme. Uppercasing does not help either
-# because ?, = and & are outside QR alphanumeric mode.
+# If 0.255 mm does not scan reliably on your printer, the remaining lever is a
+# redirect host you own:
+#     --qr-template "HTTP://EXAMPLE.COM/{sku}"     version 1, ~0.35 mm
+# serving a 301 from /<SKU> to the supplier page. See README.
 #
-# So if 0.255 mm does not scan reliably on your printer, the only remaining
-# lever is a redirect host you own:
-#     --qr-template "HTTP://AMS.SH/{sku}"     21 chars, version 1, 0.352 mm
-# serving a 301 from /<SKU> to the full Robu URL. See README.
-QR_TEMPLATE = "https://robu.in/?s={sku}&post_type=product"
+# Any other supplier works through --supplier and --qr-template, e.g. Robu:
+#     --supplier Robu --qr-template "https://robu.in/?s={sku}&post_type=product"
+QR_TEMPLATE = "https://lcsc.com/product-detail/{sku}.html"
 QR_ECC = "L"            # L keeps the symbol one version smaller than M for long URLs
-SUPPLIER = "Robu"       # printed on the strip alongside the SKU
+SUPPLIER = "LCSC"       # printed on the strip alongside the SKU
 
 warnings: list[str] = []
 
@@ -130,10 +130,11 @@ def voltage_of(rating: str) -> str:
     return f"{m.group(1)}V" if m else ""
 
 
-def load_csv(path: pathlib.Path, feeder: float, qr_template: str) -> list[Part]:
-    """Read the Robu inventory export.
+def load_csv(path: pathlib.Path, feeder: float, qr_template: str,
+             supplier: str = SUPPLIER) -> list[Part]:
+    """Read a parts list.
 
-    Its header repeats `kind` twice, so columns are taken by position, not name:
+    Columns are taken by position, not name (some exports repeat a header):
     kind, value, tolerance, rating, subtype, footprint, sku, quantity
     """
     out: list[Part] = []
@@ -165,7 +166,7 @@ def load_csv(path: pathlib.Path, feeder: float, qr_template: str) -> list[Part]:
             p.headline = " ".join(x for x in (value, subtype, fp) if x)
         # Stock quantity is deliberately NOT printed — it goes stale the moment
         # you use a part, and a sticker outlives the count.
-        p.detail = f"{SUPPLIER} {sku.upper()}" if sku else ""
+        p.detail = f"{supplier} {sku.upper()}" if sku else ""
         p.qr = qr_template.format(sku=sku.upper()) if sku else ""
         if not sku:
             warn(i, "no SKU, sticker will have no QR")
@@ -479,13 +480,15 @@ def main() -> int:
     ap.add_argument("--gutter", type=float, default=GUTTER,
                     help="white between stickers in mm (default 0.5); cuts run down its middle")
     ap.add_argument("--qr-template", default=QR_TEMPLATE,
-                    help="QR payload; {sku} is substituted (default: the Robu search URL)")
+                    help="QR payload; {sku} is substituted (default: the LCSC product page)")
+    ap.add_argument("--supplier", default=SUPPLIER,
+                    help="supplier name printed before the SKU (default: LCSC)")
     ap.add_argument("--marks", action="store_true",
                     help="add a 50 mm ruler and footer; off by default so no ink is spent on words")
     ap.add_argument("--pdf", action="store_true", help="also write PDF via inkscape")
     a = ap.parse_args()
 
-    parts = load_csv(a.input, a.feeder, a.qr_template)
+    parts = load_csv(a.input, a.feeder, a.qr_template, a.supplier)
     if not parts:
         print("no parts found", file=sys.stderr)
         return 1

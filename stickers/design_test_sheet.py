@@ -173,7 +173,7 @@ def build():
             (1.7, "#3B4447", "D17D"), (1.85, "#3B4447", "D18D"), (2.0, "#3B4447", "D20D")]):
         xx = M + (i // 3) * 90
         yy = y + (i % 3) * 4.6
-        o.append(sans(f"{SUPPLIER} R178998 · 1% 100mW 0603", xx, yy, size, fill, 70))
+        o.append(sans(f"{SUPPLIER} C23138 · 1% 100mW 0603", xx, yy, size, fill, 70))
         o.append(mono(code, xx + 73, yy, 2.2, "#666"))
     y += 3 * 4.6 + 1
 

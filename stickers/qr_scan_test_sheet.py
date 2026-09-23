@@ -1,7 +1,7 @@
 """Print-and-scan diagnostic for the strip QR.
 
-Every code opens a real Robu page, and each cell uses a different SKU from your
-inventory, so whatever your phone lands on names the cell that worked.
+Every code opens a real LCSC product page, and each cell uses a different part,
+so whatever your phone lands on names the cell that worked.
 
 Everything sits between y=20 and y=250 so nothing lands in a printer's
 unprintable trailing-edge margin.
@@ -19,8 +19,8 @@ SIZES = [6.6, 7.0, STRIP_BOX, 7.8, 8.4, 9.0]
 # URL on a domain nobody owns is a dead code that teaches you nothing.
 PROBE = "PROBE V1 {size} NOT A LINK"
 SKU = {
-    "a": ["R178998", "R249596", "R209451", "R135460", "R138664", "R137904"],
-    "b": ["R189311", "R135638", "R134466", "R135953", "R137581", "R189367"],
+    "a": ["C23138", "C25804", "C21190", "C25744", "C14663", "C1525"],
+    "b": ["C19702", "C2286", "C72043", "C72041", "C7519", "C23138"],
 }
 
 
@@ -63,7 +63,7 @@ def main():
         "Print at 100%, and this time try BEST / HIGH quality — it is usually worth one size step.",
         "Last run: 8.4 mm scanned, 7.8 mm did not, 7.2 mm scanned only with effort. That puts your",
         "floor near 0.29 mm per module. The 8 mm strip holds a 7.4 mm box, so the fix is fewer",
-        "modules — but Robu needs both query parameters, so the URL cannot shrink. Row 1 is that",
+        "modules — but the LCSC path is case-sensitive, so it cannot use dense alphanumeric mode. Row 1 is that",
         "URL at 0.255 mm. Row 2 is a DENSITY PROBE, not a link: it shows text when scanned, and",
         "tells you what a short redirect host would buy before you go and register one.",
     ]
@@ -72,7 +72,7 @@ def main():
     ruler_y = 31 + len(head) * 4.2 + 3.0          # always clear of the header
     ruler(o, ruler_y)
 
-    y = band(o, ruler_y + 13, "1 — the real link: https://robu.in/?s=SKU&post_type=product   (29 modules, v3)",
+    y = band(o, ruler_y + 13, "1 — the real link: https://lcsc.com/product-detail/SKU.html   (29 modules, v3)",
              QR_TEMPLATE, SKU["a"])
     y = band(o, y + 6, "2 — DENSITY PROBE, not a link — scanning shows text, not a page   (21 modules, v1)",
              PROBE, SKU["b"], probe=True)
@@ -80,9 +80,9 @@ def main():
     o.append(mono(f"3 — payload length, all at {STRIP_BOX:g} mm (exactly what the 8 mm strip gives)",
                   M, y + 3, 3.0))
     yy = y + 8
-    variants = [("https://robu.in/?s=R172325&post_type=product", "the working URL, 44 ch"),
-                ("https://robu.in/?s=R172313", "without post_type — wrong page"),
-                ("robu.in/?s=R148929", "no scheme, 18 ch"),
+    variants = [("https://lcsc.com/product-detail/C14663.html", "the default URL, 43 ch"),
+                ("https://www.lcsc.com/product-detail/C14663.html", "with www, 47 ch"),
+                ("HTTPS://LCSC.COM/PRODUCT-DETAIL/C14663.HTML", "uppercase — wrong page"),
                 ("PROBE V1 7.4MM NOT A LINK", "v1 density probe, not a link")]
     x = M
     for payload, lbl in variants:
@@ -108,7 +108,7 @@ def main():
         o.append(mono(f"{p.value}  ·  {p.sku}", M + 41, y + 5.5 + i * 11, 2.4, "#555"))
     y += len(parts) * 11 + 8
 
-    o.append(mono("Report back: smallest cell in row 1 that OPENS ROBU, and in row 2 that DECODES.", M, y + 4, 2.6, "#111"))
+    o.append(mono("Report back: smallest cell in row 1 that OPENS THE PART, and in row 2 that DECODES.", M, y + 4, 2.6, "#111"))
     o.append(mono("Row 2 reaching lower than row 1 means a short redirect host would buy you a size step.", M, y + 8, 2.5, "#444"))
     ruler(o, min(y + 20, PAGE_H - 30), "50.0 mm — second ruler, in case the first clipped")
     o.append("</svg>")

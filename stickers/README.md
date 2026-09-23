@@ -23,13 +23,14 @@ paired one cell per part.
   outermost cut ticks: `labels.py` prints the distance they must be apart
   (or add `--marks` for a 50 mm ruler on the sheet).
 
-![Stickers on 8, 12 and 16 mm magazines](../images/sizes.png)
+![Stickers on 8, 12 and 16 mm magazines](../images/cover.jpg)
 
 ## Examples
 
-A real 8 mm sheet: resistors, capacitors and LEDs, colour-coded by class. Each
-part gets a front sticker (package band, value, rating) and a top strip
-(spec, supplier SKU and a QR that opens the supplier's product page).
+An 8 mm sheet made from [`example.csv`](example.csv): real LCSC parts
+(resistors, capacitors, LEDs, an ESD diode), colour-coded by class. Each part
+gets a front sticker (package band, value, rating) and a top strip (spec, LCSC
+part number and a QR that opens the part's LCSC page).
 
 ![8 mm sticker sheet](images/sheet-8mm-row.png)
 
@@ -63,7 +64,9 @@ nothing needs installing and the PDF renders identically anywhere.
 |---|---|
 | `--feeder 12` | cartridge width; 8 is the default |
 | `--gutter 0.5` | white between stickers; cuts run down its middle |
-| `--qr-template` | payload; `{sku}` is substituted. Default is the Robu search URL |
+| `--supplier` | name printed before the SKU; `LCSC` is the default |
+| `--qr-template` | QR payload; `{sku}` is substituted. Default is the LCSC product page, `https://lcsc.com/product-detail/{sku}.html` |
+| `--marks` | add a 50 mm ruler and footer to the sheet |
 | `--pdf` | also run `inkscape` to produce PDF |
 
 ## Experiment sheet
@@ -132,7 +135,7 @@ part's front sticker and its strip.
 
 ## Input
 
-Columns are read **by position**, because the Robu export repeats `kind`:
+Columns are read **by position** (some spreadsheet exports repeat a header name):
 
 ```
 kind, value, tolerance, rating, subtype, footprint, sku, quantity
@@ -142,13 +145,13 @@ kind, value, tolerance, rating, subtype, footprint, sku, quantity
 strip headline: passives lead with their spec, semiconductors lead with the part
 number. Values are normalised on the way in — `100n` → `100nF`, `330` → `330R`.
 
-## Printing
+`sku` is the supplier part number (e.g. LCSC `C23138`). It is printed on the
+strip and fills `{sku}` in the QR template. For another supplier:
 
-Print at 100%. Every sheet carries a 50 mm calibration bar — measure it before
-committing sticker paper, because "fit to page" is the usual way to waste one.
-
-Cut ticks sit in the margins, never on a sticker. Long ticks are cell edges,
-short ticks the split between a part's front sticker and its strip.
+```sh
+uv run labels.py parts.csv --supplier Robu \
+  --qr-template "https://robu.in/?s={sku}&post_type=product"
+```
 
 ## QR
 
@@ -165,13 +168,13 @@ Measured on an inkjet, normal quality, plain paper, iOS camera:
 | 0.248 mm (7.2 mm box, 29 mod) | scanned only with effort |
 
 Working floor is roughly **0.29 mm per module**. An 8 mm strip gives a 7.4 mm
-box, and the Robu URL is 44 bytes, which is a version 3 symbol: **0.255 mm**.
+box, and the LCSC URL is 43 bytes, which is a version 3 symbol: **0.255 mm**.
 That is below the floor at normal quality; best/high quality may clear it.
 
-**The URL cannot be shortened.** Robu's search only returns the product with
-`post_type=product`, and version 2 holds 32 bytes at ECC L. Dropping the scheme
-gets to 35, still too long. Uppercasing does not help because `?`, `=` and `&`
-are outside QR alphanumeric mode — that trick only works on path-style URLs.
+**The URL cannot get much shorter.** `lcsc.com` without `www` already redirects,
+and version 2 holds only 32 bytes at ECC L. Uppercasing the URL would switch it
+to the denser alphanumeric mode, but LCSC's path is case-sensitive: an
+uppercase path lands on the catalogue page, not the part.
 
 ### If 0.255 mm will not scan
 
@@ -180,8 +183,8 @@ in uppercase stays in alphanumeric mode and holds version 1:
 
 | payload | chars | version | mm/module @ 7.4 |
 |---|---|---|---|
-| `https://robu.in/?s=SKU&post_type=product` | 44 | 3 | 0.255 |
-| `HTTP://AMS.SH/R178998` | 21 | 1 | **0.352** |
+| `https://lcsc.com/product-detail/C23138.html` | 43 | 3 | 0.255 |
+| `HTTP://EXAMPLE.SH/C23138` | 24 | 1 | **0.352** |
 
 That is a 38% larger module in the same box — comfortably past your floor.
 
@@ -193,7 +196,7 @@ export default {
     const sku = new URL(request.url).pathname.slice(1).toUpperCase();
     if (!sku) return new Response("no sku", { status: 404 });
     return Response.redirect(
-      `https://robu.in/?s=${sku}&post_type=product`, 301);
+      `https://lcsc.com/product-detail/${sku}.html`, 301);
   },
 };
 ```
@@ -201,7 +204,7 @@ export default {
 Point a short domain at it, then generate with:
 
 ```sh
-python labels.py parts.csv --qr-template "HTTP://AMS.SH/{sku}"
+uv run labels.py parts.csv --qr-template "HTTP://EXAMPLE.SH/{sku}"
 ```
 
 Uppercase in the template is deliberate and required — one lowercase character
@@ -211,8 +214,12 @@ linkifies the uppercase form before committing a sheet.
 
 ## Printing
 
-Print at 100%, best/high quality. Every sheet carries a 50 mm calibration bar —
-measure it before committing sticker paper.
+Print at 100%, best/high quality, on glossy sticker paper. Check the scale
+before committing sticker paper: `labels.py` prints how far apart the outermost
+cut ticks must be, or add `--marks` for a 50 mm ruler.
+
+Cut ticks sit in the margins, never on a sticker. Long ticks are cell edges,
+short ticks the split between a part's front sticker and its strip.
 
 Content is kept 20 mm clear of the trailing edge (`MARGIN_Y`, `FOOTER_Y`),
 because that is the margin inkjets clip.

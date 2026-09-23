@@ -13,7 +13,7 @@ and https://www.printables.com/model/1182844 (SMD Magazine Modified Easy Print b
 
 **Files to upload:** everything in `print/` (including `print/rails/`), plus `cad/*.FCStd` (all three together)
 
-**Images:** `images/sizes.png` (cover), `images/inside.png`, `images/exploded.png`,
+**Images:** `images/cover.jpg` (cover), `images/closeup.jpg`, `images/exploded.jpg`,
 `stickers/images/sheet-8mm-closeup.png`, plus photos of real prints
 
 ---
@@ -47,6 +47,14 @@ brittle for them.
 shells, 8–10% gyroid infill (a little infill makes the print more reliable),
 no supports. The STLs are pre-oriented with the
 chamfered face down.
+
+**Tune your filament profile first**, especially bridging and cooling. Sagging
+bridges or under-cooled overhangs in the small latch sockets and pegs are the
+usual cause of fitment problems.
+
+**Fitting the lid:** press it on evenly with something flat and stiff over it
+(e.g. a ~3 mm mild steel plate) so all eight pegs snap in together, not one
+corner at a time.
 
 **Per magazine:** 1 body, 1 slider of the same width, 1 lid, 1 spring. The
 spring bore is 8 mm deep, for a longer spring than the original's 0.3 × 4 ×
