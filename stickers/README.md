@@ -50,9 +50,10 @@ dependencies on first run.
 
 ```sh
 uv run labels.py example.csv --out out                 # try it on the bundled example
+uv run labels.py parts-template.xlsx --out out         # or fill in the Excel template
 uv run labels.py "path/to/parts.csv" --out out --pdf
 uv run qr_scan_test_sheet.py "path/to/parts.csv"       # print-and-scan diagnostic
-uv run design_test_sheet.py "path/to/parts.csv"        # one-sheet design experiment
+uv run design_test_sheet.py "path/to/parts.csv"        # design experiment sheet
 ```
 
 Fonts are bundled in `fonts/` (OFL) and text is converted to outlines, so
@@ -62,18 +63,21 @@ nothing needs installing and the PDF renders identically anywhere.
 
 | flag | effect |
 |---|---|
-| `--feeder 12` | cartridge width; 8 is the default |
+| `--feeder 12` | tape width for rows whose `feeder` cell is empty (or with no `feeder` column); 8 is the default |
+| `--layout` | how mixed widths share sheets: `page`, `row` or `mixed` (see below). Asked interactively if omitted |
 | `--gutter 0.5` | white between stickers; cuts run down its middle |
-| `--supplier` | name printed before the SKU; `LCSC` is the default |
-| `--qr-template` | QR payload; `{sku}` is substituted. Default is the LCSC product page, `https://lcsc.com/product-detail/{sku}.html` |
+| `--supplier` | supplier for rows whose `supplier` cell is empty; `LCSC` is the default |
+| `--qr-template` | link pattern for those rows, `{sku}` substituted; default is that supplier's built-in pattern |
 | `--marks` | add a 50 mm ruler and footer to the sheet |
 | `--pdf` | also run `inkscape` to produce PDF |
 
 ## Experiment sheet
 
-`design_test_sheet.py` puts every open design question on a single A4 so they can be
-settled in one print rather than a series of them. Each cell is coded so results
-can be reported without ambiguity:
+`design_test_sheet.py` puts every open design question on one sheet (8 mm fits a
+single A4; wider tapes flow onto a second page) so they can be settled in one
+print. The sample stickers are the first parts in your CSV with the tested
+width; `--feeder 12` picks the width (default: the first part's). Each cell is
+coded so results can be reported without ambiguity:
 
 | section | codes | question |
 |---|---|---|
@@ -135,23 +139,72 @@ part's front sticker and its strip.
 
 ## Input
 
-Columns are read **by position** (some spreadsheet exports repeat a header name):
+A spreadsheet (`.xlsx`) or a CSV with a header row.
 
-```
-kind, value, tolerance, rating, subtype, footprint, sku, quantity
-```
+**Easiest: fill in [`parts-template.xlsx`](parts-template.xlsx)** in Excel,
+LibreOffice or Google Sheets. It has dropdowns for `kind`, `feeder`,
+`tolerance` and `footprint`, a note on every column header, and highlights a
+row that has a `kind` but no `value` (or the reverse). Values outside the
+dropdowns are allowed; you only get a warning. `labels.py` reads its `parts`
+sheet directly (or the first sheet of any other workbook). The template is
+built by `make_template.py` from `example.csv`.
+
+Columns are matched **by name**, in any order and any case; only `kind` and
+`value` are required:
+
+| column | example | notes |
+|---|---|---|
+| `kind` | `R`, `C`, `LED`, `IC` | picks the class colour (see below) |
+| `value` | `330`, `100n`, `USBLC6-2SC6` | long values wrap onto two lines at a space or hyphen. A value that still does not fit stops the run with an error naming the row; nothing is ever printed shortened |
+| `tolerance` | `1%` | |
+| `rating` | `100m`, `50v X7R` | power for resistors, voltage/dielectric for caps |
+| `subtype` | `MLCC` | |
+| `footprint` | `0603` | also accepted as `package` |
+| `supplier` | `LCSC`, `DigiKey`, `Mouser`, `Robu` | who the `sku` belongs to; decides the QR link (see QR below). Empty = `--supplier` (LCSC) |
+| `sku` | `C23138`, `497-5235-1-ND` | supplier part number; printed on the strip, and used to build the QR link |
+| `url` | `robu.in/?s=R178998&post_type=product` | full product link for the QR. Needed for suppliers without a built-in link; overrides it for the others |
+| `quantity` | `21-30` | for your own stock keeping. **Never printed** on the sticker: a count goes stale, the sticker doesn't |
+| `feeder` | `8`, `12`, `12mm` | tape width in mm, any value; empty uses `--feeder` |
+
+Unknown columns are ignored (and listed as a warning). A header name that
+appears twice is an error, so a column is never picked by guesswork.
 
 `kind` maps to a class (R C L D Q U J X) which picks the colour and decides the
 strip headline: passives lead with their spec, semiconductors lead with the part
 number. Values are normalised on the way in — `100n` → `100nF`, `330` → `330R`.
 
-`sku` is the supplier part number (e.g. LCSC `C23138`). It is printed on the
-strip and fills `{sku}` in the QR template. For another supplier:
+Each row can come from a different supplier. The strip shows the supplier name
+and `sku` (e.g. `LCSC C23138`), and the QR opens that part's page:
 
-```sh
-uv run labels.py parts.csv --supplier Robu \
-  --qr-template "https://robu.in/?s={sku}&post_type=product"
-```
+| `supplier` | QR link built from `sku` |
+|---|---|
+| LCSC (or empty) | `lcsc.com/product-detail/{sku}.html` |
+| DigiKey | `digikey.com/en/products/result?keywords={sku}` |
+| Mouser | `mouser.com/ProductDetail/{sku}` |
+| anything else | none: put the full link in `url` (otherwise a warning, and no QR) |
+
+Each pattern was checked by opening a real part in a browser. Links carry no
+`https://` or `www.`: every character makes the QR denser, and the browser adds
+them. Some camera apps show a scheme-less link as plain text, so check yours with
+`qr_scan_test_sheet.py` (section 3 prints it with and without `https://`).
+
+## Mixed tape widths
+
+Every sticker is the same height; only its width follows the part's `feeder`.
+When a CSV has more than one width, `labels.py` asks how they should share
+sheets (or pass `--layout`):
+
+| layout | what you get | cutting |
+|---|---|---|
+| `page` | one width per page | as usual: every column lines up down the whole sheet |
+| `row` | rows may differ, a row never mixes widths | each row has its own column ticks, in the gap above and below it |
+| `mixed` | any widths side by side; tightest packing | same as `row` |
+
+For `row` and `mixed`, parts stay in **CSV order** whenever that costs no extra
+rows; otherwise they are reordered to pack tighter, and the summary says which.
+Rows are 8 mm apart to hold their ticks, so a page holds 4 rows instead of 5.
+Cut with the sheet intact (through the sticker layer, not the backing) so every
+tick stays usable.
 
 ## QR
 
@@ -167,9 +220,25 @@ Measured on an inkjet, normal quality, plain paper, iOS camera:
 | 0.269 mm (7.8 mm box, 29 mod) | did not scan |
 | 0.248 mm (7.2 mm box, 29 mod) | scanned only with effort |
 
-Working floor is roughly **0.29 mm per module**. An 8 mm strip gives a 7.4 mm
-box, and the LCSC URL is 43 bytes, which is a version 3 symbol: **0.255 mm**.
-That is below the floor at normal quality; best/high quality may clear it.
+Working floor at normal quality on plain paper is roughly **0.29 mm per
+module**. An 8 mm strip gives a 7.4 mm box, and the LCSC link is 35 bytes, which
+is a version 3 symbol: **0.255 mm**. That is below the plain-paper floor; it
+relies on best quality on glossy sticker stock.
+
+### The QR warning
+
+`labels.py` works out every part's module size (its link length and its tape
+width) and prints a loud **QR WARNING** for any below **0.25 mm**
+(`QR_MIN_MODULE`), i.e. anything denser than the LCSC default on 8 mm. This is
+a guard against links *worse* than what has been printed, not a guarantee: run
+`qr_scan_test_sheet.py` on your printer and stock. A link too long for any QR
+at all stops the run.
+
+| link on 8 mm tape | chars | mm/module | |
+|---|---|---|---|
+| LCSC | 35 | 0.255 | ok |
+| Mouser | 40 | 0.255 | ok |
+| DigiKey | 53 | 0.255 | ok, but at the limit: a part number over 13 characters tips it into a denser code (0.224, warning) |
 
 **The URL cannot get much shorter.** `lcsc.com` without `www` already redirects,
 and version 2 holds only 32 bytes at ECC L. Uppercasing the URL would switch it
@@ -183,7 +252,7 @@ in uppercase stays in alphanumeric mode and holds version 1:
 
 | payload | chars | version | mm/module @ 7.4 |
 |---|---|---|---|
-| `https://lcsc.com/product-detail/C23138.html` | 43 | 3 | 0.255 |
+| `lcsc.com/product-detail/C23138.html` | 35 | 3 | 0.255 |
 | `HTTP://EXAMPLE.SH/C23138` | 24 | 1 | **0.352** |
 
 That is a 38% larger module in the same box — comfortably past your floor.
@@ -196,7 +265,7 @@ export default {
     const sku = new URL(request.url).pathname.slice(1).toUpperCase();
     if (!sku) return new Response("no sku", { status: 404 });
     return Response.redirect(
-      `https://lcsc.com/product-detail/${sku}.html`, 301);
+      `https://lcsc.com/product-detail/${sku}.html`, 301);   // a redirect needs the full URL
   },
 };
 ```

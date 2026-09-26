@@ -12,3 +12,7 @@ stickers/out/
 
 # macOS
 .DS_Store
+
+# Excel/LibreOffice lock files
+~$*
+.~lock.*

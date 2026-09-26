@@ -7,6 +7,7 @@ license = "CC-BY-NC-SA-4.0"
 requires-python = ">=3.11"
 dependencies = [
     "fonttools>=4.50",
+    "openpyxl>=3.1",
     "segno>=1.6",
 ]
 
