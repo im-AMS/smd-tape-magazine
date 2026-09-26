@@ -37,7 +37,7 @@ spreadsheet.
 - Rails from the two earlier versions, unmodified, so you can pick either:
   Lord Asdi's (100 / 176 / 300 mm) or OneGeekGuy's O-ring rail with end cap
   (untested with this magazine)
-- A sticker generator (work in progress): front + top labels per part with
+- A sticker generator: front + top labels per part with
   value, package and QR code, laid out on A4
 
 **Print in PETG only.** The lid snaps on with eight small pegs; PLA is too
@@ -69,9 +69,10 @@ spring bore is 8 mm deep, for a longer spring than the original's 0.3 × 4 ×
 in one folder), double-click `Parameters`, change the green cells, press
 Ctrl+R, and export the `Magazine`, `Lid` and `Slider` bodies.
 
-**Stickers:** work in progress. I've tested a few sheets but haven't used them
-on a full set of magazines yet. Print them on glossy peel-off sticker paper,
-at your printer's highest quality setting, at 100% scale.
+**Stickers:** print them on glossy peel-off sticker paper, at your printer's
+highest quality setting, at 100% scale. Before a full sheet, print the QR scan
+test sheet and scan it with your phone: codes this small depend on print
+resolution.
 
 **Source & sticker generator:** https://github.com/im-AMS/smd-tape-magazine
 

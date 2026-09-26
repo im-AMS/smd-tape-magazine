@@ -18,7 +18,7 @@ magazine.
 | `print/rails/` | rails to stand the magazines in, from the two earlier versions of this design (their own licenses, see [rails/README](print/rails/README.md)) |
 | `cad/smd-tape-magazine.FCStd` | the parametric FreeCAD model (FreeCAD 1.1+): magazine, lid, slider, parameters |
 | `cad/latch-socket-cutter.FCStd`, `cad/latch-peg.FCStd` | the lid latch shapes, linked into the main file. Keep all three files together |
-| `stickers/` | label generator (work in progress): front + top stickers per part, laid out on A4 |
+| `stickers/` | label generator: front + top stickers per part, laid out on A4 |
 | `docs/DESIGN.md` | how the model is built, measured dimensions, and known traps |
 
 ## Print
@@ -78,7 +78,7 @@ Open `cad/smd-tape-magazine.FCStd` in FreeCAD 1.1 or newer and double-click
 After changing a value press **Ctrl+R** (Edit → Refresh). Then select the
 `Magazine`, `Lid` or `Slider` body and export it as STL.
 
-## Stickers (work in progress)
+## Stickers
 
 `stickers/` generates two labels per part from a CSV parts list: a front
 label for the dispensing end and a top strip with value, package and a QR
@@ -86,8 +86,9 @@ code, sized to the magazine width.
 
 ![Sticker sheet for 8 mm magazines](stickers/images/sheet-8mm-row.png)
 
-> **Work in progress.** I've printed and tested a few sheets, but haven't used
-> them on a full set of magazines yet. Expect changes.
+> **Test your QR codes first.** Before printing a full sheet, print
+> `qr_scan_test_sheet.py` on your printer and sticker paper and scan it with your
+> phone: QR codes this small depend on print resolution.
 
 Print them on **glossy peel-off sticker paper** at your printer's **highest
 quality** setting, at 100% scale.

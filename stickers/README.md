@@ -12,8 +12,9 @@ with a knife and a ruler.
 tracks the feeder, which is why the two stickers share a column grid and can be
 paired one cell per part.
 
-> **Work in progress.** I've printed and tested a few sheets, but haven't used
-> the stickers on a full set of magazines yet. Sizes and layout may change.
+> **Test your QR codes first.** Before printing a full sheet, print
+> `qr_scan_test_sheet.py` on your printer and sticker paper and scan it with your
+> phone: QR codes this small depend on print resolution.
 
 **How to print them:**
 - Use **glossy sticker paper**, the shiny kind with a backing you peel off.
